@@ -11,5 +11,5 @@ mkdir -p "$log_path"
 mkdir -p "$previous_files"
 
 # running rsync
-rsync -av --backup --backup-dir="$previous_files" "$backup_src" "$backup_dest" \
+rsync -av --delete --backup --backup-dir="$previous_files" "$backup_src" "$backup_dest" \
 >"$log_path/backup_$current_date.log" 2> "$log_path/backup_${current_date}_error.log"
