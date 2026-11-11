@@ -1,10 +1,17 @@
 #!/bin/bash
 
 backup_src="/home/imp_files"
-backup_dest="/mnt/backup/current"
+backup_mount="/mnt/backup"
+backup_dest="$backup_mount/current"
 current_date=$(date +%Y-%m-%d)
-log_path="/mnt/backup/logs"
-previous_files="/mnt/backup/files_previous/$current_date"
+log_path="$backup_mount/logs"
+previous_files="$backup_mount/files_previous/$current_date"
+
+# safety check
+if ! mountpoint -q "$backup_mount"; then
+ echo "backup directory  is not mounted! Existign!"
+ exit 1
+fi
 
 # Creating the nessary dir
 mkdir -p "$log_path"
