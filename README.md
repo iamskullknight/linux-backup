@@ -88,52 +88,54 @@ backup-test/
 - `files_previous/` – Older versions of changed or deleted files.
 - `logs/` – Backup activity and error logs.
 
-## Important Note
+## Choosing a Backup Location
 
-This project is currently tested using a normal Ubuntu folder.
+By default, backups are stored in `~/backup-test`. You can keep this location for testing or change it to another folder or an external drive.
 
-The backup uses `rsync --delete`, so files deleted from the source are also removed from the current backup. Older copies are preserved in `files_previous/`.
+### Option 1: Use a normal folder (default)
 
-Always test with unimportant files before backing up important data.
+No changes are needed:
 
+```bash
+backup_mount="$HOME/backup-test"
+require_mount=false
+```
 
+### Option 2: Use an external drive
 
-## Backing up to an external drive or another folder
-
-By default, backups are stored in `~/backup-test`, which is inside your home folder. That is fine for testing, but a real backup should live on a different drive.
-
-**1. Plug in your drive and find where it is mounted**
+1. Connect your external drive.
+2. Find its mount point:
 
 ```bash
 lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT
 ```
 
-Look for your drive's mount point, for example `/media/yourname/MyDrive` or `/mnt/backup`.
-
-**2. Change `backup_mount` in `backup.sh`**
+3. Update the configuration in `backup.sh`:
 
 ```bash
-# Before
-backup_mount="$HOME/backup-test"
+drive_mount="/media/yourname/MyDrive"
+backup_mount="$drive_mount/backup"
+require_mount=true
+```
 
-# After (external drive)
-backup_mount="/media/yourname/MyDrive/backup"
+The script will check that the external drive is mounted before starting the backup.
 
-# After (any other folder)
+### Option 3: Use another folder
+
+```bash
 backup_mount="/data/backups/myfiles"
+require_mount=false
 ```
 
-The script creates `current/`, `files_previous/` and `logs/` inside this folder automatically.
+### Important Notes
 
-**3. Run the backup**
+- This project is currently tested using a normal Ubuntu folder.
+- The backup uses `rsync --delete`, so files deleted from the source are also removed from the current backup.
+- Older versions of modified or deleted files are preserved in `files_previous`.
+- Always test with unimportant files before backing up important data.
+- Make sure the destination folder is writable.
+- If using an external drive, connect it before running the backup.
+- Update the backup paths in `summary.sh` if you change the destination.
+- The script automatically creates the required backup folders and logs.
 
-```bash
-./backup.sh
-```
 
-**Important notes**
-
-- **Mount the drive first.** If the drive is not plugged in or mounted, the script will create that folder on your local disk instead, and your files will not be on the external drive. Check with `lsblk` or `ls /media/yourname/` before running. For scheduled backups, make sure the drive is connected at the scheduled time.
-- **Use a Linux filesystem if you can (ext4).** Drives formatted as NTFS, exFAT or FAT32 do not keep Linux file permissions or symlinks, so `rsync -a` may print permission warnings. They still work for simple file backups, but ext4 is the best choice for a dedicated backup drive.
-- **Update `summary.sh` too.** It has its own path, so change `backup_dir`, `log_file` and `error_log` to match your new location.
-- **Make sure you have write permission** to the destination folder.
