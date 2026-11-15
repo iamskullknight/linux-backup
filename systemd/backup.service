@@ -1,7 +1,14 @@
 
 [Unit]
 Description=Run a daily backup
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
+User=skullknight
+Group=skullknight
 ExecStart=/usr/local/bin/backup.sh
+
+[Install]
+WantedBy=timers.target
