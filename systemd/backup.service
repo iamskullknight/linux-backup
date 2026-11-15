@@ -6,8 +6,8 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-User=skullknight
-Group=skullknight
+User=YOUR_USER
+Group=YOUR_USER
 ExecStart=/usr/local/bin/backup.sh
 
 [Install]
