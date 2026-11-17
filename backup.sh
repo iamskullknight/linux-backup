@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 backup_src="/home/imp_files"
 backup_mount="$HOME/backup-test"
